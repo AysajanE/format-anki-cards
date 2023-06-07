@@ -15,6 +15,7 @@ This script is designed to be run from the command line. Here's the usage:
 
 ```shell
 python reformat_anki_cards.py input_file.txt
+```
 
 This will create a new file called reformattedinput_file.txt in the same directory as the script, containing the reformatted content.
 
