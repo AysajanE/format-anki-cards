@@ -1,9 +1,10 @@
 import os
 import sys
+import re
 
 def reformat_anki_cards(input_file):
     """
-    This function reformats the content of a .txt file. 
+    This function reformats the content of a .txt file.
     It specifically extracts lines containing 'Front' and 'Back', then reformats them into a new file.
 
     Args:
@@ -20,19 +21,23 @@ def reformat_anki_cards(input_file):
         # Read the file line by line
         lines = in_file.readlines()
 
-    # Filter the lines to only include those with 'Front' or 'Back' in them
-    lines = [line for line in lines if 'Front' in line or 'Back' in line]
-
     with open(output_file, 'w') as out_file:
-        for i in range(0, len(lines), 2): # Assuming each 'Front' line is followed by a 'Back' line
-            # Split the line at the colon and strip any leading or trailing whitespace
-            question_line = lines[i]
-            answer_line = lines[i+1]
-
-            # Split the line at the colon and strip any leading or trailing whitespace
-            question = question_line.split(':', 1)[1].strip()
-            answer = answer_line.split(':', 1)[1].strip()
-
+        for line in lines:
+            # Check if both 'Front' and 'Back' are present in the same line
+            if 'Front' in line and 'Back' in line:
+                # Split the line at '**Back**: ' to separate the question and answer
+                front_part, back_part = line.split('**Back**: ')
+                # Further split to extract question and answer
+                question = front_part.split('**Front**: ')[1].strip()
+                answer = back_part.strip()
+            else:
+                # If 'Front' and 'Back' are in different lines, just process them as earlier
+                if 'Front' in line:
+                    question = line.split(':', 1)[1].strip()
+                elif 'Back' in line:
+                    answer = line.split(':', 1)[1].strip()
+                else:
+                    continue # Skip lines that don't have either 'Front' or 'Back'
             # Write the reformatted line to the output file
             out_file.write(f"{question};{answer}\n")
 
