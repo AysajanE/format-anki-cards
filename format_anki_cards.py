@@ -17,30 +17,32 @@ def reformat_anki_cards(input_file):
     # Output file name will be 'reformatted' + input file name
     output_file = 'reformatted_' + os.path.basename(input_file)
 
+    question = None
+    answer = None
+
     with open(input_file, 'r') as in_file:
-        # Read the file line by line
         lines = in_file.readlines()
 
     with open(output_file, 'w') as out_file:
         for line in lines:
             # Check if both 'Front' and 'Back' are present in the same line
             if 'Front' in line and 'Back' in line:
-                # Split the line at '**Back**: ' to separate the question and answer
                 front_part, back_part = line.split('**Back**: ')
-                # Further split to extract question and answer
                 question = front_part.split('**Front**: ')[1].strip()
                 answer = back_part.strip()
+                out_file.write(f"{question};{answer}\n")
+                question = None
+                answer = None
             else:
-                # If 'Front' and 'Back' are in different lines, just process them as earlier
                 if 'Front' in line:
-                    question = line.split(':', 1)[1].strip()
+                    question = line.split('**Front**: ')[1].strip()
                 elif 'Back' in line:
-                    answer = line.split(':', 1)[1].strip()
-                else:
-                    continue # Skip lines that don't have either 'Front' or 'Back'
-            # Write the reformatted line to the output file
-            out_file.write(f"{question};{answer}\n")
+                    answer = line.split('**Back**: ')[1].strip()
 
+            if question and answer:
+                out_file.write(f"{question};{answer}\n")
+                question = None
+                answer = None
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
