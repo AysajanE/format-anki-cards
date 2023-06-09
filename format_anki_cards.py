@@ -27,17 +27,17 @@ def reformat_anki_cards(input_file):
         for line in lines:
             # Check if both 'Front' and 'Back' are present in the same line
             if 'Front' in line and 'Back' in line:
-                front_part, back_part = line.split('**Back**: ')
-                question = front_part.split('**Front**: ')[1].strip()
+                front_part, back_part = line.split('Back: ')
+                question = front_part.split('Front: ')[1].strip()
                 answer = back_part.strip()
                 out_file.write(f"{question};{answer}\n")
                 question = None
                 answer = None
             else:
                 if 'Front' in line:
-                    question = line.split('**Front**: ')[1].strip()
+                    question = line.split('Front: ')[1].strip()
                 elif 'Back' in line:
-                    answer = line.split('**Back**: ')[1].strip()
+                    answer = line.split('Back: ')[1].strip()
 
             if question and answer:
                 out_file.write(f"{question};{answer}\n")
